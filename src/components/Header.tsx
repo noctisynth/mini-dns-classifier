@@ -55,9 +55,9 @@ export default function Header() {
           <NavigationMenuItem>
             <Button onClick={toggleTheme} size="icon" variant="ghost">
               {theme === 'dark' ? (
-                <Sun className="size-5" />
-              ) : (
                 <Moon className="size-5" />
+              ) : (
+                <Sun className="size-5" />
               )}
             </Button>
           </NavigationMenuItem>

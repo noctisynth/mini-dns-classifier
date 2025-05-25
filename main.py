@@ -54,10 +54,23 @@ async def get_report(report_id: str):
         {"id": RecordID("reports", report_id)},
     )
     if not report:
-        return {"error": "Report not found"}
+        return {"message": "Report not found"}
     report = report[0]
     report["id"] = report["id"].id
     return {
         "message": "Report retrieved successfully",
         "data": report,
+    }
+
+
+@app.get("/reports/")
+async def get_reports():
+    reports = db.select("reports")
+    if not reports:
+        return {"message": "Reports are not found"}
+    for report in reports:
+        report["id"] = report["id"].id
+    return {
+        "message": "Reports retrieved successfully",
+        "data": reports,
     }

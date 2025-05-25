@@ -67,3 +67,20 @@ export async function getReport(reportId: string): Promise<Report> {
   }
   return response.data;
 }
+
+export interface Reports {
+  message: string;
+  data: {
+    id: string;
+    report: AnalysisReport;
+    created_at: string;
+  }[];
+}
+
+export async function getReports(): Promise<Reports> {
+  const response = await axiosInstance.get('/api/reports/');
+  if (response.status !== 200) {
+    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+  }
+  return response.data;
+}

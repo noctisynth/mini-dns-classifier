@@ -5,11 +5,16 @@ import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import Main from './views/main';
 import { Report } from './views/report';
+import List from './views/list';
 
 const router = createBrowserRouter([
   {
     path: '/',
     Component: Main,
+  },
+  {
+    path: '/list',
+    Component: List,
   },
   {
     path: '/report/:reportId',
