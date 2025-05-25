@@ -13,11 +13,15 @@ import { Ellipsis, UploadCloud } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Main() {
+  const [message, setMessage] = useState<string | null>(null);
+
   const handleClear = () => {
     const fileInput = document.getElementById('upload') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
     }
+    setMessage(null);
+    setUploading(false);
   };
 
   const [uploading, setUploading] = useState(false);
@@ -29,7 +33,7 @@ export default function Main() {
         setUploading(false);
       }, 2000);
     } else {
-      console.log('没有选择文件');
+      setMessage('没有选择文件');
     }
   };
 
@@ -47,7 +51,17 @@ export default function Main() {
             <CardContent>
               <div className="flex flex-col w-full max-w-sm gap-3">
                 <Label htmlFor="upload">选择文件</Label>
-                <Input id="upload" type="file" accept=".pcap" />
+                <Input
+                  id="upload"
+                  type="file"
+                  accept=".pcap"
+                  onChange={() => {
+                    setMessage(null);
+                  }}
+                />
+                {message && (
+                  <div className="text-red-500 text-sm">{message}</div>
+                )}
               </div>
 
               <footer className="p-4 text-center text-sm text-muted-foreground">
