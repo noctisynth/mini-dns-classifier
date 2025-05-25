@@ -26,3 +26,12 @@ dist-ssr
 # Python
 __pycache__/
 *.py[cod]
+
+# Model
+*.h5
+
+# Database
+db/
+
+# Assets
+uploads/

@@ -23,23 +23,10 @@ def initialize_model(
     return model, processor
 
 
-def analyze_pcap(pcap_path: str) -> Tuple[List[PredictionResult], AnalysisReport]:
-    model, processor = initialize_model()
+def analyze_pcap(
+    model: CharCNNKim,
+    processor: DNSDataProcessor,
+    pcap_path: str,
+) -> Tuple[List[PredictionResult], AnalysisReport]:
     analyzer = PCAPAnalyzer(model.model, processor)
     return analyzer.analyze(pcap_path)
-
-
-def main():
-    pcap_path = "bad.pcap"  # 替换为实际的PCAP文件路径
-    results, report = analyze_pcap(pcap_path)
-
-    print("Analysis Results:")
-    for result in results:
-        print(result.model_dump())
-
-    print("\nAnalysis Report:")
-    print(report.model_dump())
-
-
-if __name__ == "__main__":
-    main()

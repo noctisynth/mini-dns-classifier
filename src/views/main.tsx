@@ -11,6 +11,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Ellipsis, UploadCloud } from 'lucide-react';
 import { useState } from 'react';
+import * as api from '@/lib/api';
+import { redirect } from 'react-router';
+import Header from '@/components/Header';
 
 export default function Main() {
   const [message, setMessage] = useState<string | null>(null);
@@ -25,13 +28,29 @@ export default function Main() {
   };
 
   const [uploading, setUploading] = useState(false);
-  const handleFileUpload = () => {
+  const handleFileUpload = async () => {
     const fileInput = document.getElementById('upload') as HTMLInputElement;
     if (fileInput.files && fileInput.files.length > 0) {
       setUploading(true);
-      setTimeout(() => {
+      const fileSize = (fileInput.files?.[0].size || 0) / 1024;
+      if (fileSize > 10 * 1024 * 1024) {
+        setMessage(`文件大小${fileInput.files?.[0].size}超过限制（10MB）`);
         setUploading(false);
-      }, 2000);
+        return;
+      }
+      if (!fileInput.files?.[0].name.endsWith('.pcap')) {
+        setMessage('请上传有效的 .pcap 文件');
+        setUploading(false);
+        return;
+      }
+      const results = await api.predict(fileInput.files[0]);
+      if (results.message) {
+        setMessage(results.message);
+      } else {
+        redirect(`/report/${results.report_id}`);
+      }
+
+      setUploading(false);
     } else {
       setMessage('没有选择文件');
     }
@@ -40,6 +59,7 @@ export default function Main() {
   return (
     <>
       <div className="bg-background text-foreground h-screen w-screen">
+        <Header />
         <main className="flex h-full w-full items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader>

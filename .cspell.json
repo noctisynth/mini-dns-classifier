@@ -5,6 +5,7 @@
         "ndarray",
         "rdpcap",
         "regularizers",
-        "rolldown"
+        "rolldown",
+        "surrealdb"
     ]
 }
