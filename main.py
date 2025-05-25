@@ -36,7 +36,6 @@ async def predict(file: bytes = File(description="PCAP file to analyze")):
     results, report = analyze_pcap(model, processor, str(pcap_path))
 
     results = {
-        "results": [result.model_dump() for result in results],
         "report": report.model_dump(),
         "created_at": datetime.now(),
     }
@@ -56,4 +55,9 @@ async def get_report(report_id: str):
     )
     if not report:
         return {"error": "Report not found"}
-    return report[0]
+    report = report[0]
+    report["id"] = report["id"].id
+    return {
+        "message": "Report retrieved successfully",
+        "data": report,
+    }
