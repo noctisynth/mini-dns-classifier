@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Ellipsis, UploadCloud } from 'lucide-react';
 import { useState } from 'react';
 import * as api from '@/lib/api';
-import { redirect } from 'react-router';
+import { useNavigate } from "react-router";
 import Header from '@/components/Header';
 
 export default function Main() {
@@ -27,6 +27,7 @@ export default function Main() {
     setUploading(false);
   };
 
+  const redirect = useNavigate();
   const [uploading, setUploading] = useState(false);
   const handleFileUpload = async () => {
     const fileInput = document.getElementById('upload') as HTMLInputElement;
@@ -46,7 +47,9 @@ export default function Main() {
       const results = await api.predict(fileInput.files[0]);
       if (results.message) {
         setMessage(results.message);
-      } else {
+      }
+
+      if (results.report_id) {
         redirect(`/report/${results.report_id}`);
       }
 

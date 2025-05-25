@@ -6,6 +6,7 @@
         "rdpcap",
         "regularizers",
         "rolldown",
+        "shadcn",
         "surrealdb"
     ]
 }

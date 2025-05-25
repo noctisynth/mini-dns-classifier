@@ -1,16 +1,16 @@
-import { redirect } from 'react-router';
+import { useNavigate } from 'react-router';
 import {
   NavigationMenu,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
 export default function Header() {
+  const redirect = useNavigate();
+
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   if (theme === 'dark') {
     document.documentElement.classList.add('dark');
@@ -43,10 +43,13 @@ export default function Header() {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <Button variant="ghost">
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                主页
-              </NavigationMenuLink>
+            <Button variant="ghost" onClick={() => redirect('/')}>
+              主页
+            </Button>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Button variant="ghost" onClick={() => redirect('/list')}>
+              列表
             </Button>
           </NavigationMenuItem>
           <NavigationMenuItem>
