@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/chart';
 import { useEffect, useState } from 'react';
 import * as api from '@/lib/api';
+import { Badge } from '@/components/ui/badge';
 
 export function Report() {
   const params = useParams<{ reportId: string }>();
@@ -216,9 +217,32 @@ export function Report() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      疑似：
-                      <span className="text-red-500">{predict.prediction}</span>{' '}
-                      (置信度 {predict.confidence_percent})
+                      <div className="flex items-center justify-between">
+                        <div>
+                          疑似：
+                          <span className="text-red-500">
+                            {predict.prediction}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs">置信度</span>
+                          <Badge
+                            variant={
+                              predict.confidence <= 0.8
+                                ? 'default'
+                                : 'destructive'
+                            }
+                          >
+                            {predict.confidence <= 0.5
+                              ? '较低'
+                              : predict.confidence <= 0.8
+                                ? '一般'
+                                : predict.confidence <= 0.9
+                                  ? '较高'
+                                  : '非常高'}
+                          </Badge>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
