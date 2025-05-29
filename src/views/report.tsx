@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -18,6 +19,8 @@ import {
 import { useEffect, useState } from 'react';
 import * as api from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Download, Ellipsis } from 'lucide-react';
 
 export function Report() {
   const params = useParams<{ reportId: string }>();
@@ -35,6 +38,8 @@ export function Report() {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [reportData, setReportData] = useState<api.AnalysisReport | null>(null);
   const [createdAt, setCreatedAt] = useState<Date | null>(null);
+  const [hasCsv, setHasCsv] = useState<boolean>(false);
+  const [downloading, setDownloading] = useState<boolean>(false);
   const pktChartData = [
     {
       class: 'Covert Channel',
@@ -73,8 +78,8 @@ export function Report() {
         if (report.data) {
           setReportData(report.data.report);
           setCreatedAt(new Date(report.data.created_at));
+          setHasCsv(!!report.data.csv_path);
         }
-        console.log(report.data);
       })
       .finally(() => {
         setLoaded(true);
@@ -91,7 +96,33 @@ export function Report() {
         </div>
         <div className="flex flex-1 w-full">
           <Card className="w-full max-w-3xl mx-auto my-4 p-6">
-            <h2 className="text-xl font-semibold mb-4">报告内容</h2>
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">报告详情</CardTitle>
+              <CardAction>
+                <Button
+                  variant="outline"
+                  className="cursor-pointer"
+                  onClick={async () => {
+                    if (hasCsv && reportId) {
+                      setDownloading(true);
+                      const blob = await api.getReportCSV(reportId);
+                      const objectUrl = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = objectUrl;
+                      a.download = `${reportId}.csv`;
+                      document.body.appendChild(a);
+                      a.click();
+                    }
+                    setDownloading(false);
+                  }}
+                  disabled={!hasCsv || downloading}
+                >
+                  {downloading && <Ellipsis />}
+                  下载详细报告
+                  {!downloading && <Download />}
+                </Button>
+              </CardAction>
+            </CardHeader>
             {!loaded && (
               <>
                 <Skeleton className="w-[250px] h-[250px] rounded-full self-center" />

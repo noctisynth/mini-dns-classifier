@@ -56,6 +56,7 @@ export interface Report {
   data: {
     id: string;
     report: AnalysisReport;
+    csv_path?: string;
     created_at: string;
   };
 }
@@ -79,6 +80,16 @@ export interface Reports {
 
 export async function getReports(): Promise<Reports> {
   const response = await axiosInstance.get('/api/reports/');
+  if (response.status !== 200) {
+    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+  }
+  return response.data;
+}
+
+export async function getReportCSV(reportId: string): Promise<Blob> {
+  const response = await axiosInstance.get(`/api/report/${reportId}/download`, {
+    responseType: 'blob',
+  });
   if (response.status !== 200) {
     throw new Error(`Error: ${response.status} - ${response.statusText}`);
   }

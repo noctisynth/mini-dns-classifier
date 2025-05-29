@@ -6,6 +6,7 @@ from models.api import initialize_model, analyze_pcap
 from datetime import datetime
 from pathlib import Path
 from fastapi import File
+from fastapi.responses import FileResponse
 
 import uuid
 
@@ -31,19 +32,33 @@ async def predict(file: bytes = File(description="PCAP file to analyze")):
     if not uploads_dir.exists():
         uploads_dir.mkdir(parents=True, exist_ok=True)
 
-    pcap_path = uploads_dir.joinpath(f"{uuid.uuid4()}.pcap")
+    filename = str(uuid.uuid4())
+    pcap_path = uploads_dir.joinpath(f"{filename}.pcap")
     pcap_path.write_bytes(file)
     results, report = analyze_pcap(model, processor, str(pcap_path))
 
-    results = {
+    report_data = {
         "report": report.model_dump(),
         "created_at": datetime.now(),
     }
-    data = db.create("reports", results)
+
+    # Save the results as csv
+    csv_path = uploads_dir.joinpath(f"{filename}.csv")
+    with csv_path.open("w") as f:
+        f.write("timestamp,query,prediction,confidence,confidence_percent\n")
+        for result in results:
+            f.write(
+                f"{result.timestamp},{result.query},{result.prediction},"
+                f"{result.confidence},{result.confidence_percent}\n"
+            )
+    report_data["csv_path"] = str(csv_path)
+    report_data["pcap_path"] = str(pcap_path)
+
+    data = db.create("reports", report_data)
     return {
         "message": "Prediction completed",
         "report_id": data["id"].id,
-        "data": results,
+        "data": report_data,
     }
 
 
@@ -74,3 +89,21 @@ async def get_reports():
         "message": "Reports retrieved successfully",
         "data": reports,
     }
+
+
+@app.get("/report/{report_id}/download")
+async def download_report(report_id: str) -> bytes:
+    report = db.query(
+        "SELECT * FROM reports WHERE id = $id",
+        {"id": RecordID("reports", report_id)},
+    )
+    if not report:
+        return {"message": "Report not found"}
+    report = report[0]
+    csv_path = report["csv_path"]
+
+    return FileResponse(
+        csv_path,
+        media_type="text/csv",
+        filename=f"{report_id}.csv",
+    )
