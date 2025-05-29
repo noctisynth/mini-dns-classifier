@@ -83,7 +83,7 @@ export default function List() {
           </div>
         </main>
         <footer className="text-center text-sm text-gray-500 p-4">
-        © 2023 DNS 分类系统
+        © 2025 DNS 分类系统
       </footer>
       </div>
     </>

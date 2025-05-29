@@ -88,7 +88,7 @@ export default function Main() {
               </div>
 
               <footer className="p-4 text-center text-sm text-muted-foreground">
-                <p>© 2023 DNS 分类系统</p>
+                <p>© 2025 DNS 分类系统</p>
               </footer>
             </CardContent>
             <CardFooter>
